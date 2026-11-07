@@ -9,9 +9,9 @@ window.ESSAYS = [
   {
     id: 1,
     title: "A Brief History of Growth Hacking",
-    date: "November 2025",
+    date: "November 2026",
     excerpt: "Before the term existed, the practice was already alive in the quiet corners of early Silicon Valley offices — a restless preference for experiment over advertisement.",
-    url: "brief-history-of-growth-hacking.html"
+    url: "growth-marketing-1.html"
   },
   {
     id: 2,
