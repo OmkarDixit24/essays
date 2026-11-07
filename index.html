@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Essays — A Quiet Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8f5f0;
+      --ink: #1c1917;
+      --muted: #78716c;
+      --rule: #d6d3d1;
+      --accent: #44403c;
+      --paper: #fafaf9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4.5rem 1.75rem 6rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3.75rem;
+    }
+
+    .masthead {
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: clamp(1.85rem, 4.5vw, 2.35rem);
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+
+    .rule {
+      width: 48px;
+      height: 1px;
+      background: var(--rule);
+      margin: 1.75rem auto 0;
+    }
+
+    /* Search */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 2.75rem;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 0.95rem 1.15rem 0.95rem 2.75rem;
+      font-family: inherit;
+      font-size: 1.1rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .search-input::placeholder {
+      color: #a8a29e;
+      font-style: italic;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.05rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    /* List */
+    .essay-list {
+      list-style: none;
+    }
+
+    .essay-item {
+      padding: 1.35rem 0;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1.5rem;
+      transition: background 0.15s ease;
+    }
+
+    .essay-item:first-child {
+      border-top: 1px solid var(--rule);
+    }
+
+    .essay-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.28rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      text-decoration: none;
+      flex: 1;
+      transition: color 0.15s ease;
+    }
+
+    .essay-title:hover {
+      color: var(--muted);
+    }
+
+    .essay-meta {
+      font-size: 0.92rem;
+      color: var(--muted);
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+
+    /* Empty & loading states */
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 1.15rem;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2.75rem;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      background: transparent;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      min-width: 2.4rem;
+      transition: all 0.15s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: #f5f5f4;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .page-btn.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .page-info {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0 0.75rem;
+      letter-spacing: 0.02em;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+      font-size: 0.9rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Subtle responsive tweaks */
+    @media (max-width: 520px) {
+      .container {
+        padding: 3rem 1.25rem 4.5rem;
+      }
+      .essay-item {
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: flex-start;
+      }
+      .essay-meta {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="masthead">Essays</h1>
+      <p class="subtitle">A quiet collection of measured thoughts</p>
+      <div class="rule"></div>
+    </header>
+
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input
+        type="search"
+        class="search-input"
+        id="search"
+        placeholder="Search titles or words within essays…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <ul class="essay-list" id="essay-list" aria-live="polite"></ul>
+
+    <div class="pagination" id="pagination" hidden></div>
+
+    <footer>
+      <p>Refined for the contemplative reader</p>
+    </footer>
+  </div>
+
+  <script>
+    // ──────────────────────────────────────────────
+    // DATA — replace or extend this array freely.
+    // Even 1 000+ entries stay performant because we
+    // only render a small page of results at a time.
+    // ──────────────────────────────────────────────
+    const essays = [
+      {
+        id: 1,
+        title: "On the Quiet Dignity of Restraint",
+        date: "October 2024",
+        excerpt: "There is a particular grace in choosing not to speak, in letting silence carry the weight that words would only diminish."
+      },
+      {
+        id: 2,
+        title: "Letters from a Winter Garden",
+        date: "January 2025",
+        excerpt: "Frost traces the glass like an old calligraphy. Inside, the room holds its breath and the mind, unhurried, begins to listen."
+      },
+      {
+        id: 3,
+        title: "The Architecture of Silence",
+        date: "March 2025",
+        excerpt: "Rooms are not merely spaces; they are vessels for attention. The best of them teach us how little we need to say."
+      },
+      {
+        id: 4,
+        title: "Of Time, Memory, and the Unhurried Mind",
+        date: "June 2025",
+        excerpt: "We mistake speed for vitality. True presence arrives only when we consent to move at the pace of thought itself."
+      },
+      {
+        id: 5,
+        title: "A Note on Aristocratic Leisure",
+        date: "September 2025",
+        excerpt: "Leisure is not idleness. It is the cultivated art of having time enough to notice what is already sufficient."
+      }
+      // Add hundreds more here. The page will handle them.
+    ];
+
+    // ──────────────────────────────────────────────
+    // CONFIG
+    // ──────────────────────────────────────────────
+    const PAGE_SIZE = 20;          // items per page — keep low for speed
+    let currentPage = 1;
+    let filtered = [...essays];
+
+    // ──────────────────────────────────────────────
+    // DOM
+    // ──────────────────────────────────────────────
+    const listEl     = document.getElementById('essay-list');
+    const pagination = document.getElementById('pagination');
+    const searchInput = document.getElementById('search');
+
+    // ──────────────────────────────────────────────
+    // RENDER
+    // ──────────────────────────────────────────────
+    function render() {
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      currentPage = Math.min(currentPage, totalPages);
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+      // Build with DocumentFragment — very cheap DOM updates
+      const frag = document.createDocumentFragment();
+
+      if (pageItems.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty-state';
+        empty.textContent = total === 0 && essays.length > 0
+          ? 'No essays match your search.'
+          : 'No essays yet.';
+        frag.appendChild(empty);
+      } else {
+        pageItems.forEach(essay => {
+          const li = document.createElement('li');
+          li.className = 'essay-item';
+
+          const a = document.createElement('a');
+          a.className = 'essay-title';
+          a.href = `#essay-${essay.id}`;          // replace with real URL later
+          a.textContent = essay.title;
+
+          const meta = document.createElement('span');
+          meta.className = 'essay-meta';
+          meta.textContent = essay.date || '';
+
+          li.appendChild(a);
+          li.appendChild(meta);
+          frag.appendChild(li);
+        });
+      }
+
+      listEl.innerHTML = '';
+      listEl.appendChild(frag);
+
+      renderPagination(total, totalPages);
+    }
+
+    function renderPagination(total, totalPages) {
+      if (total <= PAGE_SIZE) {
+        pagination.hidden = true;
+        return;
+      }
+      pagination.hidden = false;
+      pagination.innerHTML = '';
+
+      const frag = document.createDocumentFragment();
+
+      // Previous
+      const prev = document.createElement('button');
+      prev.className = 'page-btn';
+      prev.textContent = '←';
+      prev.disabled = currentPage === 1;
+      prev.addEventListener('click', () => {
+        currentPage--;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      frag.appendChild(prev);
+
+      // Page numbers (smart window)
+      const maxVisible = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+      if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+
+      if (startPage > 1) {
+        const first = makePageBtn(1);
+        frag.appendChild(first);
+        if (startPage > 2) {
+          const dots = document.createElement('span');
+          dots.className = 'page-info';
+          dots.textContent = '…';
+          frag.appendChild(dots);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        frag.appendChild(makePageBtn(i));
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const dots = document.createElement('span');
+          dots.className = 'page-info';
+          dots.textContent = '…';
+          frag.appendChild(dots);
+        }
+        frag.appendChild(makePageBtn(totalPages));
+      }
+
+      // Next
+      const next = document.createElement('button');
+      next.className = 'page-btn';
+      next.textContent = '→';
+      next.disabled = currentPage === totalPages;
+      next.addEventListener('click', () => {
+        currentPage++;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      frag.appendChild(next);
+
+      // Status
+      const info = document.createElement('span');
+      info.className = 'page-info';
+      info.textContent = `${total} essay${total !== 1 ? 's' : ''}`;
+      frag.appendChild(info);
+
+      pagination.appendChild(frag);
+    }
+
+    function makePageBtn(num) {
+      const btn = document.createElement('button');
+      btn.className = 'page-btn' + (num === currentPage ? ' active' : '');
+      btn.textContent = num;
+      btn.addEventListener('click', () => {
+        currentPage = num;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      return btn;
+    }
+
+    // ──────────────────────────────────────────────
+    // SEARCH (debounced)
+    // ──────────────────────────────────────────────
+    let debounceTimer;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) {
+          filtered = [...essays];
+        } else {
+          filtered = essays.filter(e => {
+            const haystack = (
+              (e.title || '') + ' ' +
+              (e.excerpt || '') + ' ' +
+              (e.body || '')
+            ).toLowerCase();
+            return haystack.includes(q);
+          });
+        }
+        currentPage = 1;
+        render();
+      }, 180); // small delay feels instant yet avoids thrashing
+    });
+
+    // Initial paint
+    render();
+  </script>
+</body>
+</html>
